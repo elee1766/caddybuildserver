@@ -1,0 +1,25 @@
+database:
+  host: localhost
+  port: 5433
+  user: buildserver
+  password: buildserver
+  database: buildserver
+  ssl_mode: disable
+
+storage:
+  type: local
+  local:
+    path: ./builds
+
+api:
+  host: 0.0.0.0
+  port: 8080
+
+worker:
+  max_jobs: 2
+  build_path: /tmp/caddy-builds
+  stop_timeout: 300
+  preemption:
+    enabled: true       # Enable SIGUSR1 preemption
+    provider: sigusr1   # Use SIGUSR1 signal for preemption (Linux only)
+    poll_interval: 5    # Not used for sigusr1

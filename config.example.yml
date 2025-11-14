@@ -1,0 +1,57 @@
+# Example configuration file for Caddy Build Server
+# Copy this to config.yml and customize as needed
+
+database:
+  host: {{ envOr "DATABASE_HOST" "localhost" }}  # Template syntax: use env var or default
+  port: 25433
+  user: buildserver
+  password: buildserver
+  database: buildserver
+  ssl_mode: disable
+
+storage:
+  type: local  # "local" or "s3"
+  local:
+    path: ./builds
+  # s3:
+  #   bucket: caddy-builds
+  #   region: us-east-1
+  #   endpoint: ""  # Optional, for S3-compatible services like MinIO
+  #   access_key: ""
+  #   secret_key: ""
+
+api:
+  host: {{ envOr "API_HOST" "localhost" }}  # Can override with API_HOST env var
+  port: {{ envOr "API_PORT" "8234" }}  # Can override with API_PORT env var
+  go_proxy: {{ envOr "GOPROXY" "https://proxy.golang.org" }}  # Go module proxy for version resolution
+
+worker:
+  max_jobs: 2
+  build_path: /tmp/caddy-builds  # Temporary directory for builds
+  stop_timeout: 300              # Graceful shutdown timeout in seconds (default: 300 = 5 minutes)
+  docker_host: {{ envOr "DOCKER_HOST" "unix:///run/user/1000/docker.sock" }}  # Docker socket path (e.g., "unix:///var/run/docker.sock")
+  docker_image: {{ envOr "DOCKER_IMAGE" "golang:1.25" }}  # Docker image to use for builds
+  docker_memory_mb: 2048         # Memory limit in MB (default: 2048 = 2GB)
+  docker_cpus: 2.0               # CPU limit in cores (default: 2.0)
+  docker_pids_limit: 100         # PID limit (default: 100)
+  # build_env:                   # Additional environment variables to pass to build processes (optional)
+  #   GOPRIVATE: "github.com/myorg/*"
+  #   GOPROXY: "https://proxy.golang.org,direct"
+  signing:
+    enabled: false               # Enable PGP signing of binaries (default: false)
+    # key_file: /path/to/private-key.asc  # Path to ASCII-armored PGP signing key (required if enabled)
+    # key_password: {{ env "SIGNING_KEY_PASSWORD" }}  # Password for encrypted key (optional, use env var for security)
+  preemption:
+    enabled: false      # Enable preemption monitoring for spot instances
+    provider: azure     # Cloud provider: "azure", "sigusr1" (Linux only)
+    poll_interval: 5    # Poll interval in seconds (not used for sigusr1)
+
+# Template functions available for environment variable substitution:
+#
+#   {{ env "VAR_NAME" }}
+#     Returns the value of environment variable VAR_NAME (empty string if not set)
+#
+#   {{ envOr "VAR_NAME" "default_value" }}
+#     Returns the value of environment variable VAR_NAME, or default_value if not set
+#
+# See docs/configuration.md for full documentation
