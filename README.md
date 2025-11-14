@@ -26,11 +26,13 @@ the high level explaination is
 this is processed by the combination of 3 binaries
 
 api - which hosts the api server. api endpoints can queue jobs, check if job is already queued, check if job is done. the api component is also in charge of resolving latest versions to absolute versions. it has access to the destination store to serve artifacts
+
 worker - gets jobs and does the building in docker, and uploads finished artifacts/signatures to the destination store.
+
 janitor - runs migrations. queues/kills terminally failed jobs for retry. in the future, can do things like, cleanup, gc, etc.
 
-
-example: `curl "http://localhost:8234/api/compat?os=linux&arch=amd64" -o caddy`
+### example request
+`curl "http://localhost:8234/api/compat?os=linux&arch=amd64" -o caddy`
 
 ## other things
 
