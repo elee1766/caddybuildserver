@@ -38,7 +38,10 @@ janitor - runs migrations. queues/kills terminally failed jobs for retry. in the
 
 ### preemption detection
 
-workers support an still untested "preemption" feature. this is for running on spot vm instances, in where your vm may get preempted and shutdown without warning, in the middle of a job.
+workers support an still untested "preemption" feature.
+
+this will be for running on spot vm instances, in where your vm may get preempted and shutdown without warning, in the middle of a job.
+
 the idea is that you can configure workers with a preemption detector, and it will use said preemption detector to know if it is about to be preempted, and if it is, it will stop processing jobs, and mark all its jobs as failed, for another worker to automatically retry.
 
 ## Configuration
